@@ -7,6 +7,24 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
 import plotly.express as px
+import base64
+
+def local_font(path: str, name: str):
+    with open(path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+    font_face = f"""
+    <style>
+    @font-face {{
+        font-family: '{name}';
+        src: url(data:font/ttf;base64,{encoded}) format('truetype');
+    }}
+    html, body, [class*="css"] {{
+        font-family: '{name}', sans-serif;
+    }}
+    </style>
+    """
+    st.markdown(font_face, unsafe_allow_html=True)
+
 
 st.set_page_config(page_title="Spy-Themed Financial ML", layout="wide")
 
