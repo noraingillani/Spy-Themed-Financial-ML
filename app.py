@@ -72,7 +72,7 @@ if data_file:
 
     # === Theme 1: James Bond ===
     if theme == "James Bond":
-        css = ".stApp {background-color:#6b3b3bba; color:#6b3b3bba; font-family:'sleek';}"
+        css = ".stApp {background-color:#6b3b3bba; color:#ffffff; font-family:'sleek';}"
         apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
         df_lr = df[["Date", "Close"]].dropna().reset_index(drop=True)
         df_lr["Day"] = np.arange(len(df_lr))
@@ -95,7 +95,7 @@ if data_file:
 
     # === Theme 2: Agent 47 ===
     elif theme == "Agent 47":
-        css = ".stApp {background-color:#222; color:#fff; font-family:'stealth';}"
+        css = ".stApp {background-color:#222; color:#ffffff; font-family:'stealth';}"
         apply_theme(css, "agent47.gif", "🔫 Stealthy Up/Down Classifier")
         df["FutureRet"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["FutureRet"] > 0).astype(int)
@@ -107,7 +107,7 @@ if data_file:
 
     # === Theme 3: Mission Impossible ===
     elif theme == "Mission Impossible":
-        css = ".stApp {background-color:#001f3f; color:#39ff14; font-family:'digital';}"
+        css = ".stApp {background-color:#001f3f; color:#ffffff; font-family:'digital';}"
         apply_theme(css, "mission_impossible.gif", "🛰️ Impossible Clusters")
         df_cluster = df[["Date", "Close"]].copy()
         df_cluster["Return"] = df_cluster["Close"].pct_change()
@@ -121,7 +121,7 @@ if data_file:
 
     # === Theme 4: Jason Bourne ===
     elif theme == "Jason Bourne":
-        css = ".stApp {background-color:#111; color:#ff4136; font-family:'gritty';}"
+        css = ".stApp {background-color:#111; color:#ffffff; font-family:'gritty';}"
         apply_theme(css, "jasonbourne.gif", "🏃‍♂️ Bourne Feature Hunt")
         df["Ret"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["Ret"] > 0).astype(int)
@@ -134,7 +134,7 @@ if data_file:
 
     # === Theme 5: Jack Reacher ===
     else:
-        css = ".stApp {background-color:#3b486bba; color:#1c23ff; font-family:'rugged';}"
+        css = ".stApp {background-color:#3b486bba; color:#ffffff; font-family:'rugged';}"
         apply_theme(css, "jackreacher.gif", "🔍 Reacher’s Support Vector")
         df["Ret"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["Ret"] > 0).astype(int)
