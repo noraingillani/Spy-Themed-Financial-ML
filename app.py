@@ -80,8 +80,8 @@ if data_file:
         df["Up"] = (df["FutureRet"] > 0).astype(int)
         feats = df[["Open", "High", "Low", "Volume"]].iloc[:-1]
         target = df["Up"].iloc[:-1]
-        clf = LogisticRegression(max_iter=200).fit(feats, target)
-        st.write(f"**Accuracy:** {clf.score(feats, target):.2%}")
+        clf = LogisticRegression(max_iter=200).fit(feats.values, target.values)
+        st.write(f"**Accuracy:** {clf.score(feats.values, target.values):.2%}")
         st.bar_chart(pd.Series(clf.coef_[0], index=feats.columns))
 
     # === Theme 3: Mission Impossible ===
@@ -106,8 +106,8 @@ if data_file:
         df["Up"] = (df["Ret"] > 0).astype(int)
         feats = df[["Open", "High", "Low", "Volume"]].iloc[:-1]
         target = df["Up"].iloc[:-1]
-        rf = RandomForestClassifier(n_estimators=100, random_state=42).fit(feats, target)
-        st.write(f"**Accuracy:** {rf.score(feats, target):.2%}")
+        rf = RandomForestClassifier(n_estimators=100, random_state=42).fit(feats.values, target.values)
+        st.write(f"**Accuracy:** {rf.score(feats.values, target.values):.2%}")
         imp = pd.Series(rf.feature_importances_, index=feats.columns)
         st.bar_chart(imp)
 
@@ -119,9 +119,9 @@ if data_file:
         df["Up"] = (df["Ret"] > 0).astype(int)
         X = df[["Open", "High", "Low", "Volume"]].iloc[:-1]
         y = df["Up"].iloc[:-1]
-        svc = SVC(kernel='rbf', C=1.0).fit(X, y)
-        st.write(f"**Accuracy:** {svc.score(X, y):.2%}")
-        preds = svc.predict(X)
+        svc = SVC(kernel='rbf', C=1.0).fit(X.values, y.values)
+        st.write(f"**Accuracy:** {svc.score(X.values, y.values):.2%}")
+        preds = svc.predict(X.values)
         cm = confusion_matrix(y, preds)
         st.write("Confusion Matrix:")
         st.table(pd.DataFrame(cm, index=["Actual 0", "Actual 1"], columns=["Pred 0", "Pred 1"]))
