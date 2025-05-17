@@ -35,7 +35,7 @@ def apply_theme(css, gif, title):
 if theme == "James Bond":
     css = """
       .stApp {background-color:#f0f0f0; color:#000; font-family:'sleek';}
-      .css-1v3fvcr {background-image:url('');}
+      .css-1v3fvcr {background-image:url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngimg.com%2Fimage%2F93448&psig=AOvVaw2TXUDubBcA818onhYbRNWE&ust=1747583678599000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJDH-dnuqo0DFQAAAAAdAAAAABAE');}
     """
     apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
     df = yf_data[["Close"]].dropna().reset_index()
