@@ -41,20 +41,20 @@ if theme == "James Bond":
     df = yf_data[["Close"]].dropna().reset_index()
     df["Day"] = np.arange(len(df))
     if df.empty or len(df) < 2:
-    st.error("Not enough data returned from Yahoo Finance to train the model.")
-else:
-    X, y = df[["Day"]], df["Close"]
-    model = LinearRegression().fit(X, y)
-    days_ahead = st.slider("Days ahead",1,30,7)
-    future_X = np.arange(len(df),len(df)+days_ahead).reshape(-1,1)
-    preds = model.predict(future_X)
-    forecast = pd.DataFrame({
-      "Date": pd.date_range(end=end_date, periods=days_ahead+1, closed="right"),
-      "Price": preds
-    })
-    fig = px.line(df, x="Date",y="Close", title="Historical vs Forecast 🎯")
-    fig.add_scatter(x=forecast["Date"], y=forecast["Price"], mode="lines", name="Predicted")
-    st.plotly_chart(fig, use_container_width=True)
+        st.error("Not enough data returned from Yahoo Finance to train the model.")
+    else:
+        X, y = df[["Day"]], df["Close"]
+        model = LinearRegression().fit(X, y)
+        days_ahead = st.slider("Days ahead",1,30,7)
+        future_X = np.arange(len(df),len(df)+days_ahead).reshape(-1,1)
+        preds = model.predict(future_X)
+        forecast = pd.DataFrame({
+          "Date": pd.date_range(end=end_date, periods=days_ahead+1, closed="right"),
+          "Price": preds
+        })
+        fig = px.line(df, x="Date",y="Close", title="Historical vs Forecast 🎯")
+        fig.add_scatter(x=forecast["Date"], y=forecast["Price"], mode="lines", name="Predicted")
+        st.plotly_chart(fig, use_container_width=True)
 
 # --- 2) Agent 47 → Logistic Regression ---
 elif theme == "Agent 47":
