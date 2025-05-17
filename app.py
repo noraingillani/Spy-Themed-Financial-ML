@@ -10,34 +10,53 @@ import plotly.express as px
 
 st.set_page_config(page_title="Spy-Themed Financial ML", layout="wide")
 
-# --- Sidebar: Data Inputs ---
+# --- Sidebar: Upload CSV ---
 st.sidebar.header("Upload Financial Data CSV")
-data_file = st.sidebar.file_uploader("Upload CSV (Date, Open, High, Low, Close, Volume)", type=["csv"])
+data_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
 
 theme = st.sidebar.selectbox("Choose your covert theme",
-    ["James Bond","Agent 47","Mission Impossible","Jason Bourne","Jack Reacher"]
+    ["James Bond", "Agent 47", "Mission Impossible", "Jason Bourne", "Jack Reacher"]
 )
 
-# --- Helper: CSS + GIF loader ---
+# --- Apply Theme Function ---
 def apply_theme(css, gif, title):
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
     st.image(f"assets/{gif}", use_column_width=True)
     st.title(title)
 
+# --- Main Logic ---
 if data_file:
-    df = pd.read_csv(data_file, parse_dates=["Date"])
+    df = pd.read_csv(data_file)
+
+    # --- Clean and standardize column names ---
+    df.columns = df.columns.str.strip().str.replace('"', '')
+    col_map = {
+        "Price": "Close",
+        "Vol.": "Volume"
+    }
+    df = df.rename(columns=col_map)
+
+    # --- Parse date ---
+    if "Date" in df.columns:
+        df["Date"] = pd.to_datetime(df["Date"], format="%m/%d/%Y", errors="coerce")
+        df = df.dropna(subset=["Date"])  # Drop rows with invalid dates
+
+    # --- Validate required columns ---
+    required = {"Date", "Open", "High", "Low", "Close", "Volume"}
+    if not required.issubset(df.columns):
+        st.error(f"Missing required columns. Required: {', '.join(required)}")
+        st.stop()
+
     df = df.sort_values("Date").dropna()
 
-    # --- 1) James Bond → Linear Regression ---
+    # === Theme 1: James Bond ===
     if theme == "James Bond":
-        css = """
-          .stApp {background-color:#f0f0f0; color:#000; font-family:'sleek';}
-        """
+        css = ".stApp {background-color:#f0f0f0; color:#000; font-family:'sleek';}"
         apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
         df_lr = df[["Date", "Close"]].dropna().reset_index(drop=True)
         df_lr["Day"] = np.arange(len(df_lr))
 
-        if df_lr.empty or len(df_lr) < 2:
+        if len(df_lr) < 2:
             st.error("Not enough data to train the model.")
         else:
             X, y = df_lr[["Day"]], df_lr["Close"]
@@ -46,18 +65,16 @@ if data_file:
             future_X = np.arange(len(df_lr), len(df_lr)+days_ahead).reshape(-1,1)
             preds = model.predict(future_X)
             forecast = pd.DataFrame({
-              "Date": pd.date_range(start=df_lr["Date"].iloc[-1]+pd.Timedelta(days=1), periods=days_ahead),
-              "Price": preds
+                "Date": pd.date_range(start=df_lr["Date"].iloc[-1] + pd.Timedelta(days=1), periods=days_ahead),
+                "Price": preds
             })
             fig = px.line(df_lr, x="Date", y="Close", title="Historical vs Forecast 🎯")
             fig.add_scatter(x=forecast["Date"], y=forecast["Price"], mode="lines", name="Predicted")
             st.plotly_chart(fig, use_container_width=True)
 
-    # --- 2) Agent 47 → Logistic Regression ---
+    # === Theme 2: Agent 47 ===
     elif theme == "Agent 47":
-        css = """
-          .stApp {background-color:#222; color:#fff; font-family:'stealth';}
-        """
+        css = ".stApp {background-color:#222; color:#fff; font-family:'stealth';}"
         apply_theme(css, "agent47.gif", "🔫 Stealthy Up/Down Classifier")
         df["FutureRet"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["FutureRet"] > 0).astype(int)
@@ -67,28 +84,23 @@ if data_file:
         st.write(f"**Accuracy:** {clf.score(feats, target):.2%}")
         st.bar_chart(pd.Series(clf.coef_[0], index=feats.columns))
 
-    # --- 3) Mission Impossible → K-Means Clustering ---
+    # === Theme 3: Mission Impossible ===
     elif theme == "Mission Impossible":
-        css = """
-          .stApp {background-color:#001f3f; color:#39ff14; font-family:'digital';}
-        """
+        css = ".stApp {background-color:#001f3f; color:#39ff14; font-family:'digital';}"
         apply_theme(css, "mission_impossible.gif", "🛰️ Impossible Clusters")
         df_cluster = df[["Date", "Close"]].copy()
         df_cluster["Return"] = df_cluster["Close"].pct_change()
         df_cluster = df_cluster.dropna().reset_index(drop=True)
-        X = df_cluster["Return"].values.reshape(-1,1)
+        X = df_cluster["Return"].values.reshape(-1, 1)
         k = st.slider("Clusters", 2, 6, 3)
         km = KMeans(n_clusters=k, random_state=42).fit(X)
         df_cluster["Cluster"] = km.labels_
-        fig = px.scatter(df_cluster, x="Date", y="Return", color="Cluster",
-                         title="Classified close-price cells")
+        fig = px.scatter(df_cluster, x="Date", y="Return", color="Cluster", title="Classified close-price cells")
         st.plotly_chart(fig, use_container_width=True)
 
-    # --- 4) Jason Bourne → Random Forest ---
+    # === Theme 4: Jason Bourne ===
     elif theme == "Jason Bourne":
-        css = """
-          .stApp {background-color:#111; color:#ff4136; font-family:'gritty';}
-        """
+        css = ".stApp {background-color:#111; color:#ff4136; font-family:'gritty';}"
         apply_theme(css, "jasonbourne.gif", "🏃‍♂️ Bourne Feature Hunt")
         df["Ret"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["Ret"] > 0).astype(int)
@@ -99,11 +111,9 @@ if data_file:
         imp = pd.Series(rf.feature_importances_, index=feats.columns)
         st.bar_chart(imp)
 
-    # --- 5) Jack Reacher → SVM Classification ---
+    # === Theme 5: Jack Reacher ===
     else:
-        css = """
-          .stApp {background-color:#fafafa; color:#2f4f4f; font-family:'rugged';}
-        """
+        css = ".stApp {background-color:#fafafa; color:#2f4f4f; font-family:'rugged';}"
         apply_theme(css, "jackreacher.gif", "🔍 Reacher’s Support Vector")
         df["Ret"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["Ret"] > 0).astype(int)
@@ -114,6 +124,7 @@ if data_file:
         preds = svc.predict(X)
         cm = confusion_matrix(y, preds)
         st.write("Confusion Matrix:")
-        st.table(pd.DataFrame(cm, index=["Actual 0","Actual 1"], columns=["Pred 0","Pred 1"]))
+        st.table(pd.DataFrame(cm, index=["Actual 0", "Actual 1"], columns=["Pred 0", "Pred 1"]))
+
 else:
     st.warning("Please upload a CSV file to proceed.")
