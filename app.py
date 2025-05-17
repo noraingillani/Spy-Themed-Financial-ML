@@ -40,6 +40,9 @@ if theme == "James Bond":
     apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
     df = yf_data[["Close"]].dropna().reset_index()
     df["Day"] = np.arange(len(df))
+    if df.empty or len(df) < 2:
+    st.error("Not enough data returned from Yahoo Finance to train the model.")
+else:
     X, y = df[["Day"]], df["Close"]
     model = LinearRegression().fit(X, y)
     days_ahead = st.slider("Days ahead",1,30,7)
