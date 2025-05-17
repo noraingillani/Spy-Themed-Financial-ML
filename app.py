@@ -19,10 +19,6 @@ end_date    = st.sidebar.date_input("End date",   value=pd.to_datetime("2025-05-
 
 df_kragle = pd.read_csv(kragle_file) if kragle_file else pd.DataFrame()
 yf_data   = yf.download(ticker, start=start_date, end=end_date)
-if yf_data.empty or len(yf_data) < 10:
-    st.error("Not enough data returned from Yahoo Finance. Please check the ticker symbol and date range.")
-    st.stop()
-
 
 # --- Theme selector ---
 theme = st.sidebar.selectbox("Choose your covert theme",
