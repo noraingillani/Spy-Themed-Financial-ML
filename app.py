@@ -24,6 +24,23 @@ def apply_theme(css, gif, title):
     st.image(f"assets/{gif}", use_column_width=True)
     st.title(title)
 
+# --- Convert Volume Strings like '52.16M' to floats ---
+def convert_volume(val):
+    if isinstance(val, str):
+        val = val.strip().upper()
+        try:
+            if val.endswith("M"):
+                return float(val[:-1]) * 1_000_000
+            elif val.endswith("B"):
+                return float(val[:-1]) * 1_000_000_000
+            elif val.endswith("K"):
+                return float(val[:-1]) * 1_000
+            else:
+                return float(val.replace(",", ""))
+        except:
+            return np.nan
+    return val
+
 # --- Main Logic ---
 if data_file:
     df = pd.read_csv(data_file)
@@ -41,6 +58,10 @@ if data_file:
         df["Date"] = pd.to_datetime(df["Date"], format="%m/%d/%Y", errors="coerce")
         df = df.dropna(subset=["Date"])  # Drop rows with invalid dates
 
+    # --- Convert Volume to numeric ---
+    if "Volume" in df.columns:
+        df["Volume"] = df["Volume"].apply(convert_volume)
+
     # --- Validate required columns ---
     required = {"Date", "Open", "High", "Low", "Close", "Volume"}
     if not required.issubset(df.columns):
@@ -51,7 +72,7 @@ if data_file:
 
     # === Theme 1: James Bond ===
     if theme == "James Bond":
-        css = ".stApp {background-color:##563e3eba; color:#000; font-family:'sleek';}"
+        css = ".stApp {background-color:#6b3b3bba; color:#6b3b3bba; font-family:'sleek';}"
         apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
         df_lr = df[["Date", "Close"]].dropna().reset_index(drop=True)
         df_lr["Day"] = np.arange(len(df_lr))
