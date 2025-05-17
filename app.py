@@ -25,6 +25,11 @@ def local_font(path: str, name: str):
     """
     st.markdown(font_face, unsafe_allow_html=True)
 
+local_font("assets/sleek.ttf", "sleek")
+
+def styled_title(text):
+    st.markdown(f"<h1 style='font-family:sleek;'>{text}</h1>", unsafe_allow_html=True)
+
 
 st.set_page_config(page_title="Spy-Themed Financial ML", layout="wide")
 
@@ -90,8 +95,9 @@ if data_file:
 
     # === Theme 1: James Bond ===
     if theme == "James Bond":
-        css = ".stApp {background-color:#6b3b3bba; color:#ffffff; font-family:'sleek';}"
-        apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
+        css = ".stApp {background-color:#6b3b3bba; color:#ffffff;}"
+        apply_theme(css, "jamesbond.gif")
+        styled_title("🕶️ 007 Price Prediction")
         df_lr = df[["Date", "Close"]].dropna().reset_index(drop=True)
         df_lr["Day"] = np.arange(len(df_lr))
 
