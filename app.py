@@ -74,7 +74,7 @@ if data_file:
 
     # === Theme 1: James Bond ===
     if theme == "James Bond":
-        css = ".stApp {background-color:#6b3b3bba; color:#ffffff; font:'assets/sleek';}"
+        css = ".stApp {background-color:#6b3b3bba; color:#ffffff; font-family:'sleek';}"
         apply_theme(css, "jamesbond.gif", "🕶️ 007 Price Prediction")
         df_lr = df[["Date", "Close"]].dropna().reset_index(drop=True)
         df_lr["Day"] = np.arange(len(df_lr))
