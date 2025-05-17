@@ -134,7 +134,7 @@ if data_file:
 
     # === Theme 5: Jack Reacher ===
     else:
-        css = ".stApp {background-color:#fafafa; color:#2f4f4f; font-family:'rugged';}"
+        css = ".stApp {background-color:#3b486bba; color:#3b486bba; font-family:'rugged';}"
         apply_theme(css, "jackreacher.gif", "🔍 Reacher’s Support Vector")
         df["Ret"] = df["Close"].pct_change().shift(-1)
         df["Up"] = (df["Ret"] > 0).astype(int)
