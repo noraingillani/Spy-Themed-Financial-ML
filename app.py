@@ -120,4 +120,3 @@ else:
     cm = confusion_matrix(y, preds)
     st.write("Confusion Matrix:")
     st.table(pd.DataFrame(cm, index=["Actual 0","Actual 1"], columns=["Pred 0","Pred 1"]))
-s
